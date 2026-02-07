@@ -236,6 +236,12 @@ function Claims() {
           min="0"
           value={form.montoEstimado}
           onChange={e => setForm({ ...form, montoEstimado: e.target.value })}
+          onKeyDown={(e) => {
+            // Prevent 'e', 'E', '+', '-'
+            if (["e", "E", "+", "-"].includes(e.key)) {
+              e.preventDefault();
+            }
+          }}
           required
         />
 
