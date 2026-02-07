@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: claims-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: claims-service
+  template:
+    metadata:
+      labels:
+        app: claims-service
+    spec:
+      containers:
+      - name: claims-service
+        image: claims-service:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8083
+        env:
+        - name: DB_URL
+          value: jdbc:mysql://mysql-claims:3306/claims_db?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true&useSSL=false
+        - name: DB_PASSWORD
+          value: password
+        - name: POLICIES_SERVICE_URL
+          value: http://policies-service:8081/api/polizas
+        - name: PROVIDERS_SERVICE_URL
+          value: http://providers-service:8082/api/proveedores
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: claims-service
+spec:
+  selector:
+    app: claims-service
+  ports:
+    - port: 8083
+      targetPort: 8083
+  type: LoadBalancer

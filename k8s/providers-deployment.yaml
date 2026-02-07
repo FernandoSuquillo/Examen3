@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: providers-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: providers-service
+  template:
+    metadata:
+      labels:
+        app: providers-service
+    spec:
+      containers:
+      - name: providers-service
+        image: providers-service:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8082
+        env:
+        - name: DB_URL
+          value: jdbc:postgresql://postgres-providers:5432/providers_db
+        - name: DB_PASSWORD
+          value: password
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: providers-service
+spec:
+  selector:
+    app: providers-service
+  ports:
+    - port: 8082
+      targetPort: 8082
+  type: LoadBalancer

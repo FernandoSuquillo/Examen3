@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: policies-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: policies-service
+  template:
+    metadata:
+      labels:
+        app: policies-service
+    spec:
+      containers:
+      - name: policies-service
+        image: policies-service:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8081
+        env:
+        - name: DB_URL
+          value: jdbc:mysql://mysql-policies:3306/policies_db?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true&useSSL=false
+        - name: DB_PASSWORD
+          value: password
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: policies-service
+spec:
+  selector:
+    app: policies-service
+  ports:
+    - port: 8081
+      targetPort: 8081
+  type: LoadBalancer
